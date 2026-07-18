@@ -41,13 +41,13 @@ if ($hasOrigin) {
     $originUrl = git remote get-url origin
     Write-Host "Current origin points to: $originUrl" -ForegroundColor Gray
     
-    if ($originUrl -notmatch "BoostDashboard") {
-        Write-Host "Updating remote origin to https://github.com/westland/BoostDashboard.git..." -ForegroundColor Yellow
-        git remote set-url origin https://github.com/westland/BoostDashboard.git
+    if ($originUrl -notmatch "MktLeadGen") {
+        Write-Host "Updating remote origin to https://github.com/westland/MktLeadGen.git..." -ForegroundColor Yellow
+        git remote set-url origin https://github.com/westland/MktLeadGen.git
     }
 } else {
-    Write-Host "Adding remote origin pointing to: https://github.com/westland/BoostDashboard.git" -ForegroundColor Yellow
-    git remote add origin https://github.com/westland/BoostDashboard.git
+    Write-Host "Adding remote origin pointing to: https://github.com/westland/MktLeadGen.git" -ForegroundColor Yellow
+    git remote add origin https://github.com/westland/MktLeadGen.git
     Write-Host "Remote origin added." -ForegroundColor Green
 }
 
@@ -58,12 +58,12 @@ Write-Host "Files staged." -ForegroundColor Green
 
 # 5. Commit
 Write-Host "Creating commit..." -ForegroundColor Yellow
-git commit -m "Initial commit: WoW Arena Boosting and Coaching Lead System with Gemini LLM integration"
+git commit -m "Initial commit of Marketing Leads Generator (MktLeadGen)"
 Write-Host "Changes committed." -ForegroundColor Green
 
 # 6. Push to GitHub
 Write-Host "Pushing to GitHub..." -ForegroundColor Yellow
-Write-Host "Make sure you have created the empty repository BoostDashboard on GitHub before this step!" -ForegroundColor Yellow
+Write-Host "Make sure you have created the empty repository MktLeadGen on GitHub before this step!" -ForegroundColor Yellow
 git push -u origin main
 
 if ($LASTEXITCODE -eq 0) {

@@ -11,14 +11,14 @@ from dotenv import load_dotenv
 load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
 try:
-    from src.wow_boosting_leads.crew import WoWBoostingLeadsCrew
+    from src.marketing_leads_generator.crew import MarketingLeadsCrew
 except ImportError:
-    from wow_boosting_leads.crew import WoWBoostingLeadsCrew
+    from marketing_leads_generator.crew import MarketingLeadsCrew
 
 def run():
-    print("🚀 Starting WoW Boosting Lead Generation Crew...")
+    print("🚀 Starting Marketing Lead Generation Crew...")
     try:
-        crew_instance = WoWBoostingLeadsCrew()
+        crew_instance = MarketingLeadsCrew()
         result = crew_instance.crew().kickoff()
         print("\n✅ Crew execution finished successfully!")
         print(result)

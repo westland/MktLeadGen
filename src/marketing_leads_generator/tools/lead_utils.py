@@ -4,7 +4,7 @@ from typing import List, Dict
 
 # Dynamically resolve PROJECT_ROOT to the wow_boosting_leads project directory
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-LEADS_FILE = os.path.join(PROJECT_ROOT, "wow_leads.json")
+LEADS_FILE = os.path.join(PROJECT_ROOT, "marketing_leads.json")
 
 def load_existing_leads() -> List[Dict]:
     if os.path.exists(LEADS_FILE):

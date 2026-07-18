@@ -9,3 +9,5 @@ python-dotenv
 langchain-google-genai
 nest-asyncio
 pyyaml
+requests
+beautifulsoup4

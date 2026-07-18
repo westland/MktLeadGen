@@ -2,7 +2,7 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "🚀 WoW Boost Lead System Installer for Windows 11" -ForegroundColor Cyan
+Write-Host "🚀 Marketing Leads Generator Installer for Windows 11" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 # 1. Verify Python Installation
@@ -30,7 +30,7 @@ Write-Host "⚡ Installing project dependencies (this may take a couple of minut
 & .venv\Scripts\python.exe -m pip install --upgrade pip
 
 # Install dependencies explicitly to prevent editable install issues during global package search
-& .venv\Scripts\pip.exe install crewai crewai-tools praw discord.py streamlit pandas schedule python-dotenv langchain-google-genai nest-asyncio pyyaml
+& .venv\Scripts\pip.exe install crewai crewai-tools praw discord.py streamlit pandas schedule python-dotenv langchain-google-genai nest-asyncio pyyaml requests beautifulsoup4
 
 Write-Host "✅ Dependencies installed." -ForegroundColor Green
 
@@ -55,7 +55,7 @@ $dashboardBat = "@echo off`r`ncd /d %~dp0`r`ncall .venv\Scripts\activate.bat`r`n
 $dashboardBat | Out-File -FilePath "start_dashboard.bat" -Encoding ascii -NoNewline
 
 # Scraper startup shortcut
-$scraperBat = "@echo off`r`ncd /d %~dp0`r`ncall .venv\Scripts\activate.bat`r`npython -m src.wow_boosting_leads.main`r`npause"
+$scraperBat = "@echo off`r`ncd /d %~dp0`r`ncall .venv\Scripts\activate.bat`r`npython -m src.marketing_leads_generator.main`r`npause"
 $scraperBat | Out-File -FilePath "run_scraper.bat" -Encoding ascii -NoNewline
 
 # Scheduler startup shortcut
@@ -71,15 +71,15 @@ Write-Host "🖥️ Creating Desktop shortcut..." -ForegroundColor Yellow
 try {
     $WshShell = New-Object -ComObject WScript.Shell
     $DesktopPath = [System.Environment]::GetFolderPath('Desktop')
-    $Shortcut = $WshShell.CreateShortcut("$DesktopPath\WoW PvP Lead Control Center.lnk")
+    $Shortcut = $WshShell.CreateShortcut("$DesktopPath\Marketing Leads Generator.lnk")
     
     $ScriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { $PWD.ProviderPath }
     $Shortcut.TargetPath = "$ScriptDir\start_dashboard.bat"
     $Shortcut.WorkingDirectory = "$ScriptDir"
-    $Shortcut.Description = "WoW PvP Lead Control Center Dashboard"
+    $Shortcut.Description = "Marketing Leads Generator Dashboard"
     $Shortcut.IconLocation = "%SystemRoot%\System32\imageres.dll, 262"
     $Shortcut.Save()
-    Write-Host "✅ Created Desktop shortcut: WoW PvP Lead Control Center.lnk" -ForegroundColor Green
+    Write-Host "✅ Created Desktop shortcut: Marketing Leads Generator.lnk" -ForegroundColor Green
 } catch {
     Write-Host "⚠️ Failed to create Desktop shortcut: $_" -ForegroundColor Yellow
 }

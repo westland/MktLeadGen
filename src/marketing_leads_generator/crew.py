@@ -8,9 +8,37 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai.tools import BaseTool
 
-from .tools.reddit_tool import RedditWoWSearchTool
-from .tools.discord_monitor_tool import DiscordWoWMonitorTool
+from .tools.reddit_tool import RedditSearchTool
+from .tools.discord_monitor_tool import DiscordSearchTool
+from .tools.hacker_news_tool import HackerNewsSearchTool
+from .tools.amazon_tool import AmazonSearchTool
+from .tools.github_tool import GitHubSearchTool
 from .tools.lead_utils import load_existing_leads, save_leads, is_duplicate
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+def load_outreach_config() -> dict:
+    config_path = os.path.join(PROJECT_ROOT, "outreach_config.json")
+    default_config = {
+        "objectives": "Find users with specific pain points matching the search keywords, identify their issues, and generate personalized, helpful cold email outreach drafts offering a free value-first solution.",
+        "sales_pitch": "Our software product/service is designed to solve these exact frustrations. We provide highly robust automation, standard REST APIs, multi-platform integrations, and 24/7 technical support.",
+        "guardrails": "Keep the message natural and friendly. Do not sound spammy. Limit length to 150 words. Do not use generic templates—reference their exact comment. Comply with CAN-SPAM.",
+        "samples": [
+            "Subject: Solving your [Pain Point] issues\n\nHey [Name],\n\nI saw your post mentioning your struggles with [Pain Point] on the forums.\n\nOur product has a built-in feature to automate this exactly, eliminating the need to handle it manually. Would you be open to a quick, free 15-minute demo to see how it can save you time?\n\nBest,\nOutreach Team"
+        ]
+    }
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return default_config
+    return default_config
+
+def save_outreach_config(config: dict):
+    config_path = os.path.join(PROJECT_ROOT, "outreach_config.json")
+    with open(config_path, "w", encoding="utf-8") as f:
+        json.dump(config, f, indent=4, ensure_ascii=False)
 
 # Try importing standard CrewAI LLM (introduced in crewai >= 0.50.0)
 try:
@@ -82,7 +110,7 @@ class SaveLeadsInput(BaseModel):
 class SaveLeadsTool(BaseTool):
     name: str = "Save Leads Database Tool"
     description: str = (
-        "Deduplicates new leads and appends them to the wow_leads.json file. "
+        "Deduplicates new leads and appends them to the marketing_leads.json file. "
         "Input must be a JSON string of a list of dictionary objects representing leads."
     )
     args_schema: Type[BaseModel] = SaveLeadsInput
@@ -121,8 +149,8 @@ class SaveLeadsTool(BaseTool):
         return f"Successfully saved {new_leads_added} new leads to database. Total leads in database: {len(existing)}."
 
 @CrewBase
-class WoWBoostingLeadsCrew:
-    """WoW Arena Boosting Lead Generation Crew"""
+class MarketingLeadsCrew:
+    """General Marketing Lead Generation Crew"""
     agents_config = "config/agents.yaml"
     tasks_config = "config/tasks.yaml"
 
@@ -141,7 +169,13 @@ class WoWBoostingLeadsCrew:
     def lead_researcher(self) -> Agent:
         return Agent(
             config=self.agents_config_dict["lead_researcher"],
-            tools=[RedditWoWSearchTool(), DiscordWoWMonitorTool()],
+            tools=[
+                RedditSearchTool(), 
+                DiscordSearchTool(), 
+                HackerNewsSearchTool(), 
+                AmazonSearchTool(), 
+                GitHubSearchTool()
+            ],
             llm=get_llm(),
             verbose=True,
         )
@@ -187,8 +221,24 @@ class WoWBoostingLeadsCrew:
 
     @task
     def generate_task(self) -> Task:
+        config = load_outreach_config()
+        base_desc = self.tasks_config_dict["generate_task"]["description"]
+        
+        # Merge dynamic user prompts
+        dynamic_desc = (
+            f"{base_desc}\n\n"
+            f"### Dynamic Email Generation Parameters:\n"
+            f"**1. Campaign Objectives:**\n{config.get('objectives')}\n\n"
+            f"**2. Product/Service Sales Pitch (Features):**\n{config.get('sales_pitch')}\n\n"
+            f"**3. Writing Guardrails:**\n{config.get('guardrails')}\n\n"
+            f"**4. Reference Samples:**\n" + "\n---\n".join(config.get('samples', []))
+        )
+        
+        task_config = self.tasks_config_dict["generate_task"].copy()
+        task_config["description"] = dynamic_desc
+        
         return Task(
-            config=self.tasks_config_dict["generate_task"],
+            config=task_config,
             agent=self.message_generator()
         )
 

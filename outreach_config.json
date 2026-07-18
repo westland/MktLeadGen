@@ -1,0 +1,8 @@
+{
+    "objectives": "Find users with specific pain points matching the search keywords, identify their issues, and generate personalized, helpful cold email outreach drafts offering a free value-first solution.",
+    "sales_pitch": "Our software product/service is designed to solve these exact frustrations. We provide highly robust automation, standard REST APIs, multi-platform integrations, and 24/7 technical support.",
+    "guardrails": "Keep the message natural and friendly. Do not sound spammy. Limit length to 150 words. Do not use generic templates—reference their exact comment. Comply with CAN-SPAM.",
+    "samples": [
+        "Subject: Solving your [Pain Point] issues\n\nHey [Name],\n\nI saw your post mentioning your struggles with [Pain Point] on the forums.\n\nOur product has a built-in feature to automate this exactly, eliminating the need to handle it manually. Would you be open to a quick, free 15-minute demo to see how it can save you time?\n\nBest,\nOutreach Team"
+    ]
+}

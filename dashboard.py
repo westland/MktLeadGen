@@ -10,46 +10,73 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 try:
-    from src.wow_boosting_leads.tools.lead_utils import load_existing_leads, save_leads
+    from src.marketing_leads_generator.tools.lead_utils import load_existing_leads, save_leads
 except ImportError:
     try:
         from tools.lead_utils import load_existing_leads, save_leads
     except ImportError:
-        # Direct local fallback
-        from src.wow_boosting_leads.tools.lead_utils import load_existing_leads, save_leads
+        from src.marketing_leads_generator.tools.lead_utils import load_existing_leads, save_leads
+
+def load_outreach_config() -> dict:
+    config_path = os.path.join(PROJECT_ROOT, "outreach_config.json")
+    default_config = {
+        "objectives": "Find users with specific pain points matching the search keywords, identify their issues, and generate personalized, helpful cold email outreach drafts offering a free value-first solution.",
+        "sales_pitch": "Our software product/service is designed to solve these exact frustrations. We provide highly robust automation, standard REST APIs, multi-platform integrations, and 24/7 technical support.",
+        "guardrails": "Keep the message natural and friendly. Do not sound spammy. Limit length to 150 words. Do not use generic templates—reference their exact comment. Comply with CAN-SPAM.",
+        "samples": [
+            "Subject: Solving your [Pain Point] issues\n\nHey [Name],\n\nI saw your post mentioning your struggles with [Pain Point] on the forums.\n\nOur product has a built-in feature to automate this exactly, eliminating the need to handle it manually. Would you be open to a quick, free 15-minute demo to see how it can save you time?\n\nBest,\nOutreach Team"
+        ]
+    }
+    if os.path.exists(config_path):
+        try:
+            import json
+            with open(config_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return default_config
+    return default_config
+
+def save_outreach_config(config: dict):
+    config_path = os.path.join(PROJECT_ROOT, "outreach_config.json")
+    import json
+    with open(config_path, "w", encoding="utf-8") as f:
+        json.dump(config, f, indent=4, ensure_ascii=False)
 
 def generate_email_with_llm(lead: dict) -> str:
     try:
-        from src.wow_boosting_leads.crew import get_llm, HAS_CREW_LLM
+        from src.marketing_leads_generator.crew import get_llm, HAS_CREW_LLM
         llm = get_llm()
     except Exception:
         llm = None
         HAS_CREW_LLM = False
         
+    config = load_outreach_config()
+    
     fallback_text = (
-        f"Subject: Help climbing WoW PvP rating!\n\n"
+        f"Subject: Solving your {lead.get('pain_points', 'issues')}\n\n"
         f"Hey {lead.get('username')},\n\n"
-        f"I saw you are struggling as a {lead.get('class', 'WoW Player')} at {lead.get('current_rating', 'low')} rating due to {lead.get('pain_points', 'bad randoms')}.\n\n"
-        f"I offer personalized coaching and self-play sessions to help you reach {lead.get('desired_rating', 'your goal')} safely and learn strategies you can keep. "
-        f"Let me know if you would be open to a quick, free 15-minute VOD review/consultation!\n\n"
-        f"Best regards,\nWoW Coaching Team"
+        f"I saw you are having issues with {lead.get('pain_points', 'your system')}.\n\n"
+        f"We offer a solution that resolves this exactly. "
+        f"Let me know if you would be open to a quick 15-minute consultation to review how we can help!\n\n"
+        f"Best regards,\nOutreach Team"
     )
     
     if not llm:
         return fallback_text
         
     prompt = (
-        f"You are a professional World of Warcraft PvP Arena Coach.\n"
-        f"Generate a personalized, highly appealing marketing email to a potential client.\n"
-        f"Details about the client:\n"
+        f"You are a professional marketing outreach assistant.\n"
+        f"Generate a personalized, highly appealing cold email to a potential client.\n"
+        f"Details about the prospect:\n"
         f"- Username: {lead.get('username')}\n"
-        f"- Current Rating: {lead.get('current_rating', 'N/A')}\n"
-        f"- Desired Rating / Goal: {lead.get('desired_rating', 'N/A')}\n"
-        f"- Class / Spec: {lead.get('class', 'N/A')}\n"
+        f"- Target Outcome: {lead.get('desired_rating', 'N/A')}\n"
+        f"- Product Category / Stack: {lead.get('class', 'N/A')}\n"
         f"- Pain Points: {lead.get('pain_points', 'N/A')}\n\n"
-        f"Write a friendly, value-first, non-spammy marketing email. Reference their specific spec/pain points. "
-        f"Offer a free 15-minute coaching consultation/VOD review first, then introduce your services (self-play coaching). "
-        f"Format the output strictly as:\n"
+        f"Make sure to strictly adhere to the following settings:\n"
+        f"1. Objectives:\n{config.get('objectives')}\n\n"
+        f"2. Product/Service Sales Pitch Features:\n{config.get('sales_pitch')}\n\n"
+        f"3. Guardrails:\n{config.get('guardrails')}\n\n"
+        f"4. Structure the output strictly matching this format:\n"
         f"Subject: <Subject Line>\n\n"
         f"<Body Line 1>\n"
         f"<Body Line 2>\n..."
@@ -123,7 +150,7 @@ def save_env_keys(updated_keys: dict):
 
 # Page configuration for a premium dashboard layout
 st.set_page_config(
-    page_title="WoW PvP Leads Control Center",
+    page_title="Marketing Leads Generator",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -195,17 +222,23 @@ if "view_mode" not in st.session_state:
     st.session_state.view_mode = "leads"
 
 # Navigation at the top of the page
-col_title, col_nav = st.columns([3, 1])
+col_title, col_nav = st.columns([2, 1])
 with col_title:
-    st.markdown('<div class="main-title">🚀 WoW PvP Lead Control Center</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subtitle">Intelligent lead generation & qualification hub for WoW Arena Coaching & Self-Play</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-title">🚀 Marketing Leads Generator</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subtitle">Aggressive lead scraping across Reddit, Discord, Hacker News, Amazon, and GitHub</div>', unsafe_allow_html=True)
 with col_nav:
     st.write("") # Spacer
     st.write("") # Spacer
     if st.session_state.view_mode == "leads":
-        if st.button("⚙️ Manage API Keys & Settings", use_container_width=True):
-            st.session_state.view_mode = "settings"
-            st.rerun()
+        col_btn1, col_btn2 = st.columns(2)
+        with col_btn1:
+            if st.button("⚙️ API Settings", use_container_width=True):
+                st.session_state.view_mode = "settings"
+                st.rerun()
+        with col_btn2:
+            if st.button("⚙️ Outreach Prompts", use_container_width=True):
+                st.session_state.view_mode = "prompts"
+                st.rerun()
     else:
         if st.button("📋 Back to Lead Registry", use_container_width=True):
             st.session_state.view_mode = "leads"
@@ -267,6 +300,22 @@ if st.session_state.view_mode == "settings":
                 updated_env["DISCORD_BOT_TOKEN"] = discord_val
                 has_updates = True
                 
+            # Amazon Scraper Key
+            has_amazon = "AMAZON_SCRAPER_API_KEY" in current_env and current_env["AMAZON_SCRAPER_API_KEY"]
+            amazon_placeholder = "Configured (Hidden) - Enter new key to override" if has_amazon else "Enter Amazon Scraper Key (Optional)"
+            amazon_val = st.text_input("Amazon Scraper API Key", type="password", placeholder=amazon_placeholder)
+            if amazon_val:
+                updated_env["AMAZON_SCRAPER_API_KEY"] = amazon_val
+                has_updates = True
+                
+            # GitHub Token
+            has_github = "GITHUB_TOKEN" in current_env and current_env["GITHUB_TOKEN"]
+            github_placeholder = "Configured (Hidden) - Enter new token to override" if has_github else "Enter GitHub Personal Access Token"
+            github_val = st.text_input("GitHub Token (Optional)", type="password", placeholder=github_placeholder)
+            if github_val:
+                updated_env["GITHUB_TOKEN"] = github_val
+                has_updates = True
+                
         with col_env2:
             st.markdown("#### 📧 SMTP Email Outreach Settings")
             
@@ -313,6 +362,36 @@ if st.session_state.view_mode == "settings":
     
     st.stop()
 
+# If view_mode is prompts, render the prompts page and stop
+if st.session_state.view_mode == "prompts":
+    st.subheader("⚙️ Configure Outreach Objectives, Sales Pitch & Guardrails")
+    st.markdown("Customize how the LLM generates cold emails. Objectives dictate goals, the Sales Pitch describes product features, and Guardrails enforce constraints.")
+    
+    config = load_outreach_config()
+    
+    with st.form("prompts_config_form"):
+        objectives = st.text_area("1. Campaign Objectives", value=config.get("objectives", ""), height=100, help="What is the goal of the email outreach?")
+        sales_pitch = st.text_area("2. Product/Service Sales Pitch (Features)", value=config.get("sales_pitch", ""), height=150, help="What features or services are we pitching?")
+        guardrails = st.text_area("3. Writing Guardrails", value=config.get("guardrails", ""), height=100, help="Style guidelines, restrictions, or length limits.")
+        
+        st.markdown("#### 📧 Reference Sample Email")
+        sample_email = st.text_area("Sample Email Output", value=config.get("samples", [""])[0] if config.get("samples") else "", height=200, help="Example of the desired email output structure.")
+        
+        submitted_prompts = st.form_submit_button("💾 Save Outreach Config")
+        if submitted_prompts:
+            new_config = {
+                "objectives": objectives,
+                "sales_pitch": sales_pitch,
+                "guardrails": guardrails,
+                "samples": [sample_email] if sample_email else []
+            }
+            save_outreach_config(new_config)
+            st.success("Successfully updated outreach prompts configuration!")
+            st.session_state.view_mode = "leads"
+            st.rerun()
+            
+    st.stop()
+
 leads = load_existing_leads()
 
 # ----------------- SIDEBAR FILTERS & STATS -----------------
@@ -335,11 +414,11 @@ st.sidebar.markdown(f"""
 st.sidebar.markdown("---")
 st.sidebar.subheader("🤖 Agent Actions")
 
-if st.sidebar.button("🔍 Run Agents Scan", help="Instruct the Gemini CrewAI agents to scan Reddit and Discord for coaching leads"):
-    with st.spinner("Gemini agents are scouring Reddit and Discord... this may take 1-2 minutes."):
+if st.sidebar.button("🔍 Run Agents Scan", help="Instruct the Gemini CrewAI agents to scan Reddit, Discord, Hacker News, Amazon, and GitHub"):
+    with st.spinner("Gemini agents are scouring platforms for leads... this may take 1-2 minutes."):
         try:
             # Import dynamically to avoid loading latency on startup
-            from src.wow_boosting_leads.main import run as run_crew
+            from src.marketing_leads_generator.main import run as run_crew
             run_crew()
             st.sidebar.success("Scan complete! Leads list updated.")
             st.rerun()
@@ -422,12 +501,12 @@ st.sidebar.markdown("---")
 with st.sidebar.expander("➕ Add Manual Lead", expanded=False):
     with st.form("manual_lead_form", clear_on_submit=True):
         username = st.text_input("Username / Author *")
-        platform = st.selectbox("Platform", ["Reddit", "Discord", "Other"])
+        platform = st.selectbox("Platform", ["Reddit", "Discord", "HackerNews", "Amazon", "GitHub", "Other"])
         url = st.text_input("Post / Message URL")
         email = st.text_input("Email Address (optional)")
-        current_rating = st.text_input("Current Rating (e.g., 1450)")
-        desired_rating = st.text_input("Desired Rating (e.g., 1800)")
-        class_spec = st.text_input("Class / Spec (e.g., Ret Paladin)")
+        current_rating = st.text_input("Current Context (e.g., v1.0 or low rating)")
+        desired_rating = st.text_input("Desired Outcome / Goal")
+        class_spec = st.text_input("Category / Topic (e.g., Ret Paladin or SaaS)")
         pain_points = st.text_area("Pain Points")
         personalized_message = st.text_area("Outreach Draft (optional)")
         score = st.slider("Lead Quality Score", 1, 10, 7)
@@ -458,7 +537,7 @@ with st.sidebar.expander("➕ Add Manual Lead", expanded=False):
 
 # ----------------- MAIN DISPLAY AREA -----------------
 if not leads:
-    st.info("No leads found in `wow_leads.json`. Execute the scraping crew to fetch leads, or add one manually in the sidebar!")
+    st.info("No leads found in `marketing_leads.json`. Execute the scraping crew to fetch leads, or add one manually in the sidebar!")
 else:
     df = pd.DataFrame(leads)
     
@@ -516,9 +595,9 @@ else:
                 col_left, col_right = st.columns([1, 2])
                 
                 with col_left:
-                    st.write(f"**Current Rating:** `{row.get('current_rating') or 'N/A'}`")
-                    st.write(f"**Target Rating:** `{row.get('desired_rating') or 'N/A'}`")
-                    st.write(f"**Class / Spec:** `{row.get('class') or 'N/A'}`")
+                    st.write(f"**Current Context:** `{row.get('current_rating') or 'N/A'}`")
+                    st.write(f"**Target Goal:** `{row.get('desired_rating') or 'N/A'}`")
+                    st.write(f"**Category / Topic:** `{row.get('class') or 'N/A'}`")
                     st.write(f"**Target URL:** [Open Link]({row.get('url') or row.get('jump_url') or '#'})")
                     st.write(f"**Pain Points:** {row.get('pain_points') or 'None mentioned'}")
                     

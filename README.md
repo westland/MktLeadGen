@@ -1,30 +1,35 @@
-# WoW Arena Boosting & Coaching Lead System
+# Marketing Leads Generator (MktLeadGen)
 
-This application scans Reddit and Discord for players seeking arena rating pushes or coaching, qualifies the leads based on score thresholds, deduplicates them, and aggregates them into a Streamlit dashboard.
+This application is a generalized, agentic market research and lead generation tool. It scours platforms (Reddit, Discord, Hacker News, Amazon reviews, and GitHub discussions) for prospective customers experiencing specific pain points, qualifies them based on user-defined criteria, and compiles them into a Streamlit control center. It dynamically drafts cold email outreach copy matching your objectives, sales pitch features, and custom writing guardrails.
 
 ## Tech Stack
-- **Framework**: CrewAI (for multi-agent research & copy Generation)
+- **Framework**: CrewAI (agentic research and outreach copy generation)
 - **UI**: Streamlit
-- **Platforms**: Reddit API (PRAW), Discord API (discord.py)
-- **LLM**: Gemini (default priority), Grok (xAI), or OpenAI
+- **Scraper Engines**: Reddit API (PRAW), Discord API (discord.py), Hacker News API (Algolia Search), GitHub Search API, Amazon product reviews parser.
+- **LLM**: Gemini (default priority), Grok (xAI), or OpenAI.
+
+---
 
 ## ⚙️ Step-by-Step Local Installation (Windows 11)
 
-1. **Download and Extract Release**:
-   Download the latest release ZIP bundle (`WoWBoost_Release.zip`) from GitHub and extract the folder to your preferred local drive path (e.g. `C:\WoWBoost`).
+1. **Extract Project Folder**:
+   Extract the files to your preferred local drive path (e.g. `C:\Users\westl\MktLeadGen`).
 
-2. **Run Installer**: Open PowerShell inside the extracted folder and run:
+2. **Run Installer**:
+   Open PowerShell inside the folder and run:
    ```powershell
    .\install.ps1
    ```
-   *This automatically builds your local Python virtual environment (`.venv`), installs all requirements, creates configuration templates, writes Windows batch shortcuts, and generates a double-clickable **WoW PvP Lead Control Center** shortcut on your Desktop with an appropriate rocket icon.*
+   *This automatically builds your local Python virtual environment (`.venv`), installs all requirements, creates configuration templates, writes Windows batch shortcuts, and generates a double-clickable **Marketing Leads Generator** shortcut on your Desktop with an appropriate rocket icon.*
 
 3. **Configure Environment Secrets**:
-   Configure these by opening the generated `.env` file directly, or by launching the dashboard and clicking the **`⚙️ Manage API Keys & Settings`** button at the top right of the page:
+   Configure these by opening the generated `.env` file directly, or by launching the dashboard and clicking the **`⚙️ API Settings`** button:
    - `GEMINI_API_KEY`: Paste your Gemini API key (already pre-loaded for your default workspace).
    - `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET`: Put your Reddit Developer script credentials.
    - `DISCORD_BOT_TOKEN`: Put your Discord Bot token.
-   - `SMTP_EMAIL` / `SMTP_PASSWORD`: Configure your sender email and password (e.g., Gmail App Password) to enable the automated outreach email sender.
+   - `AMAZON_SCRAPER_API_KEY`: Enter an optional proxy scraping key (e.g., ScraperAPI) to bypass Amazon CAPTCHA blocks.
+   - `GITHUB_TOKEN`: Enter an optional GitHub PAT to query issues/discussions.
+   - `SMTP_EMAIL` / `SMTP_PASSWORD`: Configure your sender email and App Password to enable automated email outreach.
 
 ---
 
@@ -37,38 +42,11 @@ This application scans Reddit and Discord for players seeking arena rating pushe
 
 ---
 
-## 🤖 Directing Agents to Find Coaching Clients
+## 🤖 Directing Agents to Generate Marketing Leads
 
 Once on the dashboard:
-1. **Trigger Scan**: Click **`🔍 Run Agents Scan`** in the sidebar. The Gemini-powered agents will scrape PvP communities (Reddit & Discord) for active rating climb struggles.
-2. **Review Scoring**: Filter leads using the **Min Lead Score** slider to review qualified, high-intent prospective clients.
-3. **Outreach**: View the custom outreach draft created by Gemini (personalized with their spec, rating goals, and packages), copy it, and DM them.
-4. **Track Status**: Click **`Mark Contacted`** to update status logs in `wow_leads.json`.
-5. **Automated Email Outreach**: Enter a prospective client's email under **Client Email** in their detailed view (or fill it in during manual lead creation). Click **`📧 Email Top Leads (Top 5%)`** in the sidebar. The Gemini agent will compile a custom email pitch using their spec/rating context and send it automatically using your configured SMTP settings.
-
----
-
-## 🏆 WoW Coaching Business Playbook (Self-Play Focused)
-
-This lead system is designed to acquire and qualify clients for a **legitimate coaching and self-play improvement model** which carries substantially lower ToS risks compared to piloting/RMT boosting.
-
-### 1. Value Proposition
-Help stuck, mid-rating players (1400–1800 rating) climb to 1700–2200+ in Arena / Solo Shuffle through personalized live coaching, VOD reviews, and queue sessions—without account sharing.
-*Core Promise: "Get better, keep your account safe, and learn skills you can use long-term."*
-
-### 2. Service Tiers & Packages
-
-| Tier/Package | Price | Description |
-| :--- | :--- | :--- |
-| **Free Teaser** | $0 | 1 short VOD review or quick Discord tip to initiate outreach |
-| **Hourly Coaching** | $35–$55/hr | Live queue sessions (self-play) with real-time feedback |
-| **Basic Package** | $150–$250 | 5–8 hours + VOD reviews (target 1700 rating) |
-| **Pro Package** | $400–$600 | 12–15 hours + comprehensive comp guide (target 2000+ rating) |
-| **Gladiator Pathway** | $800–$1,500 | Ongoing multi-session support with high-profile coaches |
-| **Monthly Subscription** | $99–$199/mo | Private Discord access + 4–6 hours of live coaching monthly |
-
-### 3. Execution & Mitigation Strategies
-- **WoW ToS Compliance**: Emphasize self-play coaching. Avoid piloting (sharing account details) which triggers win-trading detection. For gold services, keep advertisements within designated services channels.
-- **Client Conversion**: Use the Streamlit dashboard message draft to offer value first (e.g. a free VOD review of one game). Convert responsive players to paid packages.
-- **Payments**: Use PayPal or Stripe and label invoices as "Educational Tutoring" or "Coaching Services".
-
+1. **Configure Campaign Prompts**: Click **`⚙️ Outreach Prompts`** in the header. Set your **Objectives**, define the core features of your product/service in the **Sales Pitch**, specify writing restrictions under **Guardrails**, and provide a reference **Sample Email**.
+2. **Trigger Scan**: Click **`🔍 Run Agents Scan`** in the sidebar. The agents will search across Reddit, Discord, Hacker News, Amazon reviews, and GitHub for discussions matching your target keyword queries.
+3. **Review Scoring**: Filter leads using the **Min Lead Score** slider to review qualified, high-intent prospective clients.
+4. **Outreach**: View the custom outreach draft created by the LLM (personalized with their specific pain points and target outcome), copy it, and DM them.
+5. **Automated Email Outreach**: Enter a prospective client's email under **Client Email** in their detailed view (or fill it in during manual lead creation). Click **`📧 Email Top Leads (Top 5%)`** in the sidebar. The copywriter agent will compile a custom email pitch using your sales pitch features and send it automatically using your configured SMTP settings.

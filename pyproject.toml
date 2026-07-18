@@ -1,7 +1,7 @@
 [project]
-name = "wow-boosting-leads"
+name = "marketing-leads-generator"
 version = "1.0.0"
-description = "A CrewAI-based agentic system to monitor and generate WoW boosting/coaching leads."
+description = "A CrewAI-based agentic system to aggressively scrape forums, reddit, discord, hacker news, and other sites for marketing leads."
 dependencies = [
     "crewai>=0.28.0",
     "crewai-tools",

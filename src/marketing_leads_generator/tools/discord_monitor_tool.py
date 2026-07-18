@@ -9,15 +9,15 @@ class DiscordSearchInput(BaseModel):
     guild_id: int = Field(..., description="Discord Server (Guild) ID")
     channel_ids: List[int] = Field(..., description="List of channel IDs to search")
     keywords: List[str] = Field(
-        default=["WTB boost", "need carry", "stuck at", "arena help", "LF boost", "rating push"],
+        default=[],
         description="Keywords to search for"
     )
     limit_per_channel: int = Field(default=50)
 
-class DiscordWoWMonitorTool(BaseTool):
-    name: str = "Discord WoW Boost Lead Monitor"
+class DiscordSearchTool(BaseTool):
+    name: str = "Discord Lead Monitor"
     description: str = (
-        "Searches recent messages in specified Discord channels for players looking for WoW arena boosts/carries. "
+        "Searches recent messages in specified Discord channels for custom keywords. "
         "Requires bot to be in the server with Read Message History permission."
     )
     args_schema: Type[BaseModel] = DiscordSearchInput
@@ -29,7 +29,7 @@ class DiscordWoWMonitorTool(BaseTool):
             return []
 
         if keywords is None:
-            keywords = ["WTB boost", "need carry", "stuck at", "arena help", "LF boost", "rating push"]
+            keywords = []
 
         results = []
 

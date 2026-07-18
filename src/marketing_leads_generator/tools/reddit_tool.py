@@ -5,18 +5,18 @@ import praw
 import os
 
 class RedditSearchInput(BaseModel):
-    query: str = Field(..., description="Search keywords for WoW arena players")
-    subreddits: List[str] = Field(default=["worldofpvp", "CompetitiveWoW", "wow"])
+    query: str = Field(..., description="Search query/keywords for target leads")
+    subreddits: List[str] = Field(default=["all"], description="Subreddits to search (e.g. ['all', 'startup', 'saas'])")
     limit: int = Field(default=12)
 
-class RedditWoWSearchTool(BaseTool):
-    name: str = "Reddit WoW PvP Lead Search"
-    description: str = "Finds players struggling with arena ratings on Reddit."
+class RedditSearchTool(BaseTool):
+    name: str = "Reddit Lead Search"
+    description: str = "Finds leads or posts matching a search query on Reddit."
     args_schema: Type[BaseModel] = RedditSearchInput
 
     def _run(self, query: str, subreddits: List[str] = None, limit: int = 12) -> List[Dict]:
         if subreddits is None:
-            subreddits = ["worldofpvp", "CompetitiveWoW", "wow"]
+            subreddits = ["all"]
 
         client_id = os.getenv("REDDIT_CLIENT_ID")
         client_secret = os.getenv("REDDIT_CLIENT_SECRET")

@@ -1,0 +1,41 @@
+research_task:
+  description: >
+    Search Reddit, Discord, Hacker News, Amazon reviews, and GitHub discussions/issues for target prospects.
+    Focus on finding posts where users mention pain points, ask for product recommendations, or discuss problems.
+    Extract the text content, platform, author, and thread URL.
+  expected_output: "A detailed list of raw leads containing post/comment bodies, user authors, URLs, and platforms."
+  agent: lead_researcher
+
+analyze_task:
+  description: >
+    Analyze each raw post/comment text to identify candidate leads.
+    Extract:
+    - username/author
+    - platform (Reddit/Discord/HackerNews/Amazon/GitHub/etc)
+    - pain points (describe the specific issue they are facing)
+    - desired_rating (re-purposed as 'desired_outcome' - the goal or solution they want)
+    - class (re-purposed as 'target_category' - product category, software stack, or topic)
+    - lead_score (1-10, where 10 means highest purchase intent or most relevant, and 1 means irrelevant)
+    Keep only leads with score >= 6.
+  expected_output: "A structured list of qualified leads, scored and categorized."
+  agent: lead_analyzer
+  context:
+    - research_task
+
+generate_task:
+  description: >
+    Draft a highly personalized, value-first cold email outreach message for each qualified lead.
+    The message must directly address their specific pain points, refer to the product features, and follow the guardrails.
+  expected_output: "A customized cold outreach message draft for each qualified lead."
+  agent: message_generator
+  context:
+    - analyze_task
+
+save_task:
+  description: >
+    Deduplicate new leads against existing entries in the database, then save all new qualified leads (including custom generated outreach letters) to the local database file.
+  expected_output: "Confirmation detailing count of new leads successfully saved."
+  agent: lead_archiver
+  context:
+    - analyze_task
+    - generate_task
