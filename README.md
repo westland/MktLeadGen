@@ -1,3 +1,13 @@
+---
+title: Marketing Leads Generator
+emoji: 🚀
+colorFrom: purple
+colorTo: blue
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Marketing Leads Generator (MktLeadGen)
 
 This application is a generalized, agentic market research and lead generation tool. It scours platforms (Reddit, Discord, Hacker News, Amazon reviews, and GitHub discussions) for prospective customers experiencing specific pain points, qualifies them based on user-defined criteria, and compiles them into a Streamlit control center. It dynamically drafts cold email outreach copy matching your objectives, sales pitch features, and custom writing guardrails.
