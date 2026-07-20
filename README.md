@@ -8,55 +8,55 @@ app_port: 7860
 pinned: false
 ---
 
-# Marketing Leads Generator (MktLeadGen)
+# Generador de Prospectos de Marketing (MktLeadGen)
 
-This application is a generalized, agentic market research and lead generation tool. It scours platforms (Reddit, Discord, Hacker News, Amazon reviews, and GitHub discussions) for prospective customers experiencing specific pain points, qualifies them based on user-defined criteria, and compiles them into a Streamlit control center. It dynamically drafts cold email outreach copy matching your objectives, sales pitch features, and custom writing guardrails.
+Esta aplicación es una herramienta generalizada y basada en agentes para la investigación de mercado y la generación de prospectos. Escanea plataformas (Reddit, Discord, Hacker News, reseñas de Amazon y discusiones de GitHub) para encontrar clientes potenciales que experimenten puntos de dolor específicos, los califica según los criterios definidos por el usuario y los recopila en un centro de control Streamlit. Redacta de forma dinámica borradores de mensajes de contacto por correo electrónico que coincidan con sus objetivos de campaña, discurso de ventas y reglas de escritura personalizadas.
 
-## Tech Stack
-- **Framework**: CrewAI (agentic research and outreach copy generation)
+## Pila Tecnológica
+- **Framework**: CrewAI (generación de borradores y búsqueda con agentes)
 - **UI**: Streamlit
-- **Scraper Engines**: Reddit API (PRAW), Discord API (discord.py), Hacker News API (Algolia Search), GitHub Search API, Amazon product reviews parser.
-- **LLM**: Gemini (default priority), Grok (xAI), or OpenAI.
+- **Motores de Escaneo**: API de Reddit (PRAW), API de Discord (discord.py), API de Hacker News (Búsqueda Algolia), API de Búsqueda de GitHub, extractor de reseñas de productos de Amazon.
+- **LLM**: Gemini (prioridad por defecto), Grok (xAI) o OpenAI.
 
 ---
 
-## ⚙️ Step-by-Step Local Installation (Windows 11)
+## ⚙️ Instalación Local Paso a Paso (Windows 11)
 
-1. **Extract Project Folder**:
-   Extract the files to your preferred local drive path (e.g. `C:\Users\westl\MktLeadGen`).
+1. **Extraer la Carpeta del Proyecto**:
+   Extraiga los archivos en la ruta de su unidad local preferida (ej. `C:\Users\westl\MktLeadGen`).
 
-2. **Run Installer**:
-   Open PowerShell inside the folder and run:
+2. **Ejecutar el Instalador**:
+   Abra **PowerShell** dentro de la carpeta y ejecute:
    ```powershell
    .\install.ps1
    ```
-   *This automatically builds your local Python virtual environment (`.venv`), installs all requirements, creates configuration templates, writes Windows batch shortcuts, and generates a double-clickable **Marketing Leads Generator** shortcut on your Desktop with an appropriate rocket icon.*
+   *Esto compila automáticamente su entorno virtual de Python local (`.venv`), instala todos los requisitos, crea plantillas de configuración, genera scripts batch de inicio para Windows y crea un acceso directo de **Generador de Prospectos de Marketing** directamente en su Escritorio con un icono de cohete.*
 
-3. **Configure Environment Secrets**:
-   Configure these by opening the generated `.env` file directly, or by launching the dashboard and clicking the **`⚙️ API Settings`** button:
-   - `GEMINI_API_KEY`: Paste your Gemini API key (already pre-loaded for your default workspace).
-   - `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET`: Put your Reddit Developer script credentials.
-   - `DISCORD_BOT_TOKEN`: Put your Discord Bot token.
-   - `AMAZON_SCRAPER_API_KEY`: Enter an optional proxy scraping key (e.g., ScraperAPI) to bypass Amazon CAPTCHA blocks.
-   - `GITHUB_TOKEN`: Enter an optional GitHub PAT to query issues/discussions.
-   - `SMTP_EMAIL` / `SMTP_PASSWORD`: Configure your sender email and App Password to enable automated email outreach.
+3. **Configurar Secretos de Entorno**:
+   Configure estos abriendo el archivo `.env` generado directamente, o iniciando el panel de control y haciendo clic en el botón **`⚙️ Ajustes de API`**:
+   - `GEMINI_API_KEY`: Pegue su clave API de Gemini (ya precargada para su espacio de trabajo predeterminado).
+   - `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET`: Coloque sus credenciales de script de desarrollador de Reddit.
+   - `DISCORD_BOT_TOKEN`: Coloque su token del Bot de Discord.
+   - `AMAZON_SCRAPER_API_KEY`: Ingrese una clave API de proxy opcional (ej. ScraperAPI) para omitir bloqueos de CAPTCHA de Amazon.
+   - `GITHUB_TOKEN`: Ingrese un token de acceso personal (PAT) de GitHub opcional para buscar en discusiones/problemas.
+   - `SMTP_EMAIL` / `SMTP_PASSWORD`: Configure su correo electrónico de remitente y contraseña de aplicación para habilitar el envío automático de correos de contacto.
 
 ---
 
-## 🖥️ Running & Accessing the Dashboard
+## 🖥️ Ejecución y Acceso al Panel de Control
 
-1. Double-click the **`start_dashboard.bat`** file in the root folder.
-2. It will activate the virtual environment and start Streamlit.
-3. Your default browser will open automatically to the control panel at:
+1. Haga doble clic en el archivo **`start_dashboard.bat`** en la carpeta raíz.
+2. Activará el entorno virtual e iniciará Streamlit.
+3. Su navegador predeterminado se abrirá automáticamente en el panel de control en:
    👉 **`http://localhost:8501`**
 
 ---
 
-## 🤖 Directing Agents to Generate Marketing Leads
+## 🤖 Dirigir Agentes para Generar Prospectos de Marketing
 
-Once on the dashboard:
-1. **Configure Campaign Prompts**: Click **`⚙️ Outreach Prompts`** in the header. Set your **Objectives**, define the core features of your product/service in the **Sales Pitch**, specify writing restrictions under **Guardrails**, and provide a reference **Sample Email**.
-2. **Trigger Scan**: Click **`🔍 Run Agents Scan`** in the sidebar. The agents will search across Reddit, Discord, Hacker News, Amazon reviews, and GitHub for discussions matching your target keyword queries.
-3. **Review Scoring**: Filter leads using the **Min Lead Score** slider to review qualified, high-intent prospective clients.
-4. **Outreach**: View the custom outreach draft created by the LLM (personalized with their specific pain points and target outcome), copy it, and DM them.
-5. **Automated Email Outreach**: Enter a prospective client's email under **Client Email** in their detailed view (or fill it in during manual lead creation). Click **`📧 Email Top Leads (Top 5%)`** in the sidebar. The copywriter agent will compile a custom email pitch using your sales pitch features and send it automatically using your configured SMTP settings.
+Una vez en el panel de control:
+1. **Configurar Prompts de Campaña**: Haga clic en **`⚙️ Prompts de Contacto`** en el encabezado. Defina los **Objetivos de la Campaña**, describa las características clave de su producto/servicio en el **Discurso de Ventas**, establezca restricciones de redacción bajo **Reglas de Escritura** y proporcione una **Muestra de Correo** de referencia.
+2. **Ejecutar Escaneo**: Haga clic en **`🔍 Ejecutar Escaneo de Agentes`** en la barra lateral. Los agentes buscarán en Reddit, Discord, Hacker News, Amazon y GitHub conversaciones que coincidan con sus consultas de palabras clave.
+3. **Revisar Puntuación**: Utilice el deslizador **Puntuación Mínima** en la barra lateral para revisar prospectos calificados de alta relevancia.
+4. **Outreach**: Vea el borrador personalizado redactado por el LLM (adaptado a sus problemas específicos y metas), cópielo y envíelo por mensaje directo en su plataforma nativa.
+5. **Envío Automático de Correos**: Ingrese el correo de un prospecto bajo **Correo del Cliente** en su tarjeta detallada (o agréguelo al crear un prospecto manual). Haga clic en **`📧 Correo a Prospectos Top (Top 5%)`** en la barra lateral. El agente redactor compilará un correo personalizado utilizando su discurso de ventas y lo enlazará de manera automática usando sus configuraciones de SMTP.

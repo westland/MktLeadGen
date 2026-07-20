@@ -1,90 +1,90 @@
-# PowerShell Installer for Windows 11 - WoW Boost Lead System
+# Instalador de PowerShell para Windows 11 - Generador de Prospectos de Marketing
 $ErrorActionPreference = "Stop"
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "🚀 Marketing Leads Generator Installer for Windows 11" -ForegroundColor Cyan
+Write-Host "🚀 Instalador de Generador de Prospectos de Marketing" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-# 1. Verify Python Installation
-Write-Host "🔍 Checking Python installation..." -ForegroundColor Yellow
+# 1. Verificar instalación de Python
+Write-Host "🔍 Verificando instalación de Python..." -ForegroundColor Yellow
 try {
     $pythonVersion = python --version
-    Write-Host "✅ Found: $pythonVersion" -ForegroundColor Green
+    Write-Host "✅ Se encontró: $pythonVersion" -ForegroundColor Green
 } catch {
-    Write-Host "❌ Python is not installed or not added to your PATH environment variable." -ForegroundColor Red
-    Write-Host "Please install Python 3.10+ and select 'Add python.exe to PATH' during installation." -ForegroundColor Yellow
+    Write-Host "❌ Python no está instalado o no se ha agregado a la variable de entorno PATH." -ForegroundColor Red
+    Write-Host "Por favor, instale Python 3.10+ y seleccione 'Agregar python.exe al PATH' durante la instalación." -ForegroundColor Yellow
     exit 1
 }
 
-# 2. Setup Virtual Environment
+# 2. Configurar entorno virtual
 if (-not (Test-Path ".venv")) {
-    Write-Host "📦 Creating virtual environment in .venv directory..." -ForegroundColor Yellow
+    Write-Host "📦 Creando entorno virtual en el directorio .venv..." -ForegroundColor Yellow
     python -m venv .venv
-    Write-Host "✅ Virtual environment created." -ForegroundColor Green
+    Write-Host "✅ Entorno virtual creado con éxito." -ForegroundColor Green
 } else {
-    Write-Host "✅ Virtual environment folder (.venv) already exists." -ForegroundColor Green
+    Write-Host "✅ La carpeta del entorno virtual (.venv) ya existe." -ForegroundColor Green
 }
 
-# 3. Upgrade pip and Install dependencies
-Write-Host "⚡ Installing project dependencies (this may take a couple of minutes)..." -ForegroundColor Yellow
+# 3. Actualizar pip e instalar dependencias
+Write-Host "⚡ Instalando dependencias del proyecto (esto puede tardar un par de minutos)..." -ForegroundColor Yellow
 & .venv\Scripts\python.exe -m pip install --upgrade pip
 
-# Install dependencies explicitly to prevent editable install issues during global package search
+# Instalar dependencias
 & .venv\Scripts\pip.exe install crewai crewai-tools praw discord.py streamlit pandas schedule python-dotenv langchain-google-genai nest-asyncio pyyaml requests beautifulsoup4
 
-Write-Host "✅ Dependencies installed." -ForegroundColor Green
+Write-Host "✅ Dependencias instaladas con éxito." -ForegroundColor Green
 
-# 4. Handle .env configuration file
+# 4. Manejar archivo de configuración .env
 if (-not (Test-Path ".env")) {
     if (Test-Path ".env.example") {
-        Write-Host "📝 Creating .env file from template .env.example..." -ForegroundColor Yellow
+        Write-Host "📝 Creando archivo .env a partir de la plantilla .env.example..." -ForegroundColor Yellow
         Copy-Item .env.example .env
-        Write-Host "⚠️ Please remember to review the .env file and fill in your Reddit/Discord API credentials." -ForegroundColor DarkYellow
+        Write-Host "⚠️ Recuerde revisar el archivo .env y completar sus claves de API." -ForegroundColor DarkYellow
     } else {
-        Write-Host "❌ .env.example template file is missing. Could not create default .env." -ForegroundColor Red
+        Write-Host "❌ Falta la plantilla .env.example. No se pudo crear el .env por defecto." -ForegroundColor Red
     }
 } else {
-    Write-Host "✅ .env configuration file already exists." -ForegroundColor Green
+    Write-Host "✅ El archivo de configuración .env ya existe." -ForegroundColor Green
 }
 
-# 5. Create quick-start launch shortcuts
-Write-Host "💾 Generating Windows batch shortcuts..." -ForegroundColor Yellow
+# 5. Crear accesos directos de inicio rápido batch
+Write-Host "💾 Generando accesos directos por lotes para Windows..." -ForegroundColor Yellow
 
-# Dashboard startup shortcut
+# Acceso directo al Panel de Control
 $dashboardBat = "@echo off`r`ncd /d %~dp0`r`ncall .venv\Scripts\activate.bat`r`nstreamlit run dashboard.py`r`npause"
 $dashboardBat | Out-File -FilePath "start_dashboard.bat" -Encoding ascii -NoNewline
 
-# Scraper startup shortcut
+# Acceso directo al Escaneo
 $scraperBat = "@echo off`r`ncd /d %~dp0`r`ncall .venv\Scripts\activate.bat`r`npython -m src.marketing_leads_generator.main`r`npause"
 $scraperBat | Out-File -FilePath "run_scraper.bat" -Encoding ascii -NoNewline
 
-# Scheduler startup shortcut
+# Acceso directo al Programador
 $schedulerBat = "@echo off`r`ncd /d %~dp0`r`ncall .venv\Scripts\activate.bat`r`npython scheduler.py`r`npause"
 $schedulerBat | Out-File -FilePath "start_scheduler.bat" -Encoding ascii -NoNewline
 
-Write-Host "✅ Created: start_dashboard.bat" -ForegroundColor Green
-Write-Host "✅ Created: run_scraper.bat" -ForegroundColor Green
-Write-Host "✅ Created: start_scheduler.bat" -ForegroundColor Green
+Write-Host "✅ Creado: start_dashboard.bat" -ForegroundColor Green
+Write-Host "✅ Creado: run_scraper.bat" -ForegroundColor Green
+Write-Host "✅ Creado: start_scheduler.bat" -ForegroundColor Green
 
-# 6. Create Desktop Shortcut
-Write-Host "🖥️ Creating Desktop shortcut..." -ForegroundColor Yellow
+# 6. Crear acceso directo en el Escritorio
+Write-Host "🖥️ Creando acceso directo en el Escritorio..." -ForegroundColor Yellow
 try {
     $WshShell = New-Object -ComObject WScript.Shell
     $DesktopPath = [System.Environment]::GetFolderPath('Desktop')
-    $Shortcut = $WshShell.CreateShortcut("$DesktopPath\Marketing Leads Generator.lnk")
+    $Shortcut = $WshShell.CreateShortcut("$DesktopPath\Generador de Prospectos de Marketing.lnk")
     
     $ScriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { $PWD.ProviderPath }
     $Shortcut.TargetPath = "$ScriptDir\start_dashboard.bat"
     $Shortcut.WorkingDirectory = "$ScriptDir"
-    $Shortcut.Description = "Marketing Leads Generator Dashboard"
+    $Shortcut.Description = "Panel de Control del Generador de Prospectos de Marketing"
     $Shortcut.IconLocation = "%SystemRoot%\System32\imageres.dll, 262"
     $Shortcut.Save()
-    Write-Host "✅ Created Desktop shortcut: Marketing Leads Generator.lnk" -ForegroundColor Green
+    Write-Host "✅ Acceso directo creado en el Escritorio: Generador de Prospectos de Marketing.lnk" -ForegroundColor Green
 } catch {
-    Write-Host "⚠️ Failed to create Desktop shortcut: $_" -ForegroundColor Yellow
+    Write-Host "⚠️ No se pudo crear el acceso directo en el Escritorio: $_" -ForegroundColor Yellow
 }
 
 Write-Host "----------------------------------------------------------" -ForegroundColor Cyan
-Write-Host "🎉 Installation Completed Successfully!" -ForegroundColor Green
-Write-Host "You can now run 'start_dashboard.bat' or use the Desktop shortcut to view the UI." -ForegroundColor Cyan
+Write-Host "🎉 ¡Instalación completada con éxito!" -ForegroundColor Green
+Write-Host "Ahora puede ejecutar 'start_dashboard.bat' o usar el acceso directo en el Escritorio para abrir la interfaz." -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan

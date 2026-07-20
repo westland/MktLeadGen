@@ -1,31 +1,31 @@
-# PowerShell Script to Sync Repository to GitHub
+# Script de PowerShell para sincronizar el repositorio con GitHub
 $ErrorActionPreference = "Continue"
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "Git Initializer and GitHub Pusher" -ForegroundColor Cyan
+Write-Host "Inicializador de Git y Cargador a GitHub" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-# 1. Check if git is installed
+# 1. Verificar si git está instalado
 try {
     $gitVersion = git --version
-    Write-Host "Found: $gitVersion" -ForegroundColor Green
+    Write-Host "Se encontró: $gitVersion" -ForegroundColor Green
 } catch {
-    Write-Host "Git is not installed or not in PATH." -ForegroundColor Red
-    Write-Host "Please install Git from https://git-scm.com/ and try again." -ForegroundColor Yellow
+    Write-Host "Git no está instalado o no se encuentra en el PATH." -ForegroundColor Red
+    Write-Host "Por favor, instale Git desde https://git-scm.com/ e intente nuevamente." -ForegroundColor Yellow
     exit 1
 }
 
-# 2. Git Init
+# 2. Inicializar Git
 if (-not (Test-Path ".git")) {
-    Write-Host "Initializing local Git repository..." -ForegroundColor Yellow
+    Write-Host "Inicializando repositorio Git local..." -ForegroundColor Yellow
     git init
     git branch -M main
-    Write-Host "Local repository initialized on branch main." -ForegroundColor Green
+    Write-Host "Repositorio local inicializado en la rama main." -ForegroundColor Green
 } else {
-    Write-Host "Git repository already initialized." -ForegroundColor Green
+    Write-Host "El repositorio Git ya está inicializado." -ForegroundColor Green
 }
 
-# 3. Add Remote Origin
+# 3. Agregar origen remoto
 $existingRemotes = git remote
 $hasOrigin = $false
 if ($existingRemotes) {
@@ -37,38 +37,38 @@ if ($existingRemotes) {
 }
 
 if ($hasOrigin) {
-    Write-Host "Remote origin already exists." -ForegroundColor Green
+    Write-Host "El origen remoto (origin) ya existe." -ForegroundColor Green
     $originUrl = git remote get-url origin
-    Write-Host "Current origin points to: $originUrl" -ForegroundColor Gray
+    Write-Host "El origen actual apunta a: $originUrl" -ForegroundColor Gray
     
     if ($originUrl -notmatch "MktLeadGen") {
-        Write-Host "Updating remote origin to https://github.com/westland/MktLeadGen.git..." -ForegroundColor Yellow
+        Write-Host "Actualizando el origen remoto a https://github.com/westland/MktLeadGen.git..." -ForegroundColor Yellow
         git remote set-url origin https://github.com/westland/MktLeadGen.git
     }
 } else {
-    Write-Host "Adding remote origin pointing to: https://github.com/westland/MktLeadGen.git" -ForegroundColor Yellow
+    Write-Host "Agregando origen remoto que apunta a: https://github.com/westland/MktLeadGen.git" -ForegroundColor Yellow
     git remote add origin https://github.com/westland/MktLeadGen.git
-    Write-Host "Remote origin added." -ForegroundColor Green
+    Write-Host "Origen remoto agregado con éxito." -ForegroundColor Green
 }
 
-# 4. Stage Files
-Write-Host "Staging files..." -ForegroundColor Yellow
+# 4. Preparar archivos (Stage)
+Write-Host "Preparando archivos..." -ForegroundColor Yellow
 git add .
-Write-Host "Files staged." -ForegroundColor Green
+Write-Host "Archivos preparados." -ForegroundColor Green
 
-# 5. Commit
-Write-Host "Creating commit..." -ForegroundColor Yellow
-git commit -m "Initial commit of Marketing Leads Generator (MktLeadGen)"
-Write-Host "Changes committed." -ForegroundColor Green
+# 5. Crear Commit
+Write-Host "Creando commit..." -ForegroundColor Yellow
+git commit -m "Commit inicial de Generador de Prospectos de Marketing (MktLeadGen)"
+Write-Host "Cambios comprometidos." -ForegroundColor Green
 
-# 6. Push to GitHub
-Write-Host "Pushing to GitHub..." -ForegroundColor Yellow
-Write-Host "Make sure you have created the empty repository MktLeadGen on GitHub before this step!" -ForegroundColor Yellow
+# 6. Cargar en GitHub (Push)
+Write-Host "Subiendo a GitHub..." -ForegroundColor Yellow
+Write-Host "¡Asegúrese de haber creado el repositorio vacío MktLeadGen en GitHub antes de este paso!" -ForegroundColor Yellow
 git push -u origin main
 
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "Push succeeded! Project is live on GitHub." -ForegroundColor Green
+    Write-Host "¡Carga exitosa! El proyecto está en vivo en GitHub." -ForegroundColor Green
 } else {
-    Write-Host "Git push failed. Verify repository existence or git authentication settings." -ForegroundColor Red
+    Write-Host "La carga de Git falló. Verifique la existencia del repositorio o la autenticación de Git." -ForegroundColor Red
 }
 Write-Host "==========================================================" -ForegroundColor Cyan
